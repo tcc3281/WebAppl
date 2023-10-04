@@ -24,7 +24,7 @@
                 <td>@s.LastName</td>
                 <td>@s.Major.MajorName</td>
                 <td>@s.EnrollmentDate</td>
-                <td><a asp-action="Edit">Edit</a>|<a asp-action="Delete">Delete</a></td>
+                <td><a asp-action="Edit" asp-route-LearnerID="@s.LearnerID">Edit</a>|<a asp-action="Delete" asp-route-LearnerID="@s.LearnerID">Delete</a></td>
             </tr>
         }
     </tbody>

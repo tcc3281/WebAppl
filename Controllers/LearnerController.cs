@@ -39,10 +39,6 @@ namespace WebAppl.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("FirstMidName,LastName,MajorID,EnrollmentDate")] Learner learner)
         {
-            StreamWriter writer = new StreamWriter(".\\Data\\text.txt");
-            writer.WriteLine(learner.MajorID.ToString());
-            writer.WriteLine(learner.EnrollmentDate.ToString());
-            writer.Close();
             if (ModelState.IsValid)
             {
                 db.Learners.Add(learner);
@@ -56,5 +52,43 @@ namespace WebAppl.Controllers
                 return View();
             }
         }
+        public IActionResult Delete(int learnerID)
+        {
+            var temp=db.Learners.Find(learnerID);
+            if (temp == null)
+            {
+                return NotFound();
+            }
+            db.Learners.Remove(temp);
+            db.SaveChanges();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Edit(int learnerID)
+        {
+            var temp = db.Learners.Find(learnerID);
+            if (temp == null)
+            {
+                return NotFound();
+            }
+            ViewBag.MajorID = new SelectList(db.Majors, "MajorID", "MajorName");
+            return View(temp);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit([Bind("LearnerID,FirstMidName,LastName,MajorID,EnrollmentDate")] Learner learners)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Update(learners);
+                db.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.MajorID = new SelectList(db.Majors, "MajorID", "MajorName");
+            return View(learners);
+        }
+
     }
 }
