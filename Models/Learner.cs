@@ -6,6 +6,7 @@
         {
             Enrollments = new HashSet<Enrollment>();
         }
+        //khóa tự tăng
         public int LearnerID { get; set; }
         public string LastName { get; set; }
         public string FirstMidName { get; set; }

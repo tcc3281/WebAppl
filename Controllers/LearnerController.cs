@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using WebAppl.Data;
 using WebAppl.Models;
 
@@ -13,25 +14,21 @@ namespace WebAppl.Controllers
         {
             db = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(int? mid)
         {
-            var learners = db.Learners.Include(m => m.Major).ToList();
-            return View(learners);
+            if (mid == null)
+            {
+                var learner = db.Learners.Include(m => m.Major).ToList();
+                return View(learner);
+            }
+            else
+            {
+                var learner = db.Learners.Where(l=>l.MajorID==mid).Include(m=>m.Major).ToList();
+                return View(learner);
+            }
         }
         public IActionResult Create()
         {
-            //dùng 1 trong 2 cách để tạo SelectList gửi về View qua ViewBag để
-            //hiển thị danh sách chuyên ngành (Majors)
-            /*var majors = new List<SelectListItem>(); //cách 1
-            foreach (var item in db.Majors)
-            {
-                majors.Add(new SelectListItem
-                {
-                    Text = item.MajorName,
-                    Value = item.MajorID.ToString()
-                });
-            }
-            ViewBag.MajorID = majors;*/
             ViewBag.MajorID = new SelectList(db.Majors, "MajorID", "MajorName"); //cách 2
             return View();
         }
@@ -59,9 +56,16 @@ namespace WebAppl.Controllers
             {
                 return NotFound();
             }
-            db.Learners.Remove(temp);
-            db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            if (temp.Enrollments.Count() <= 0)
+            {
+                db.Learners.Remove(temp);
+                db.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return View();
+            }
         }
 
         public IActionResult Edit(int learnerID)
@@ -89,6 +93,5 @@ namespace WebAppl.Controllers
             ViewBag.MajorID = new SelectList(db.Majors, "MajorID", "MajorName");
             return View(learners);
         }
-
     }
 }

@@ -8,6 +8,7 @@ namespace WebAppl.Models
         {
             Enrollments = new HashSet<Enrollment>();
         }
+        //thuoc tinh lam khoa chinh ko tang
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CourseID { get; set; }
         public string Title { get; set; }
